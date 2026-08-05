@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base ── */
+@layer base {
+  *, ::before, ::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #FDF8F0;
+    color: #1a1a1a;
+    line-height: 1.6;
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', system-ui, sans-serif;
+    line-height: 1.2;
+  }
+}
+
+/* ── Components ── */
+@layer components {
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(34, 93, 54, 0.12);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90;
+    background-color: #225D36;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90;
+    background-color: #D4873B;
+  }
+
+  .input-base {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 text-sm transition-all;
+    @apply focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100;
+  }
+}
+
+/* ── Utilities ── */
+@layer utilities {
+  .font-display {
+    font-family: 'Poppins', system-ui, sans-serif;
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #225D36, #D4873B);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-cream {
+    background-color: #FDF8F0;
+  }
+}
+
+/* ── Leaflet map z-index & overflow fix ── */
+.leaflet-container {
+  z-index: 0 !important;
+  max-width: 100% !important;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #225D36; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #2E7D48; }
+
+/* ── Focus accessibility ── */
+:focus-visible {
+  outline: 2px solid #225D36;
+  outline-offset: 2px;
+}

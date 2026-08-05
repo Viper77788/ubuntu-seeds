@@ -1,0 +1,101 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About Us",
+    "products": "Products",
+    "advisory": "Crop Advisory",
+    "dealer": "Find a Dealer",
+    "gallery": "Gallery",
+    "contact": "Contact",
+    "callNow": "Call Now"
+  },
+  "hero": {
+    "badge": "Research-Backed Hybrid Seeds Since 2022",
+    "heading1": "Grow with",
+    "heading2": "Confidence",
+    "sub": "Ubuntu Seeds develops and supplies premium hybrid seeds for Indian farmers — from cotton fields of Gujarat to vegetable farms across India.",
+    "cta1": "Explore Our Seeds",
+    "cta2": "Find a Dealer"
+  },
+  "stats": {
+    "varieties": "Seed Varieties",
+    "states": "States Covered",
+    "farmers": "Farmers Served",
+    "rd": "Years of R&D"
+  },
+  "why": {
+    "heading": "The Science Behind Your Harvest",
+    "sub": "From field trial to your farm — every variety developed with one goal: maximum yield, minimum risk."
+  },
+  "categories": {
+    "heading": "Our Seed Categories",
+    "sub": "From field crops to spices — a complete portfolio for every Indian farmer",
+    "browse": "Browse"
+  },
+  "featured": {
+    "heading": "Featured Varieties",
+    "sub": "Our best-selling and top-performing seed varieties",
+    "viewAll": "View All Seeds"
+  },
+  "testimonials": {
+    "heading": "What Farmers Say",
+    "sub": "Real stories from real farmers across India"
+  },
+  "news": {
+    "heading": "Latest News",
+    "sub": "Updates, crop advisory, and farmer success stories",
+    "readAll": "Read All Articles"
+  },
+  "cta": {
+    "heading": "Ready to Grow with Ubuntu Seeds?",
+    "sub": "Contact our team for seed recommendations, pricing, and dealer information in your area.",
+    "call": "Call Now",
+    "whatsapp": "WhatsApp"
+  },
+  "footer": {
+    "tagline": "Grow with Confidence",
+    "desc": "Ubuntu Seeds Private Limited is a research-driven agricultural seed company based in Ahmedabad, Gujarat.",
+    "company": "Company",
+    "products": "Products",
+    "support": "Support",
+    "rights": "All rights reserved."
+  },
+  "products": {
+    "title": "Research-Backed Hybrid Seeds",
+    "sub": "Browse our complete catalog — each variety developed through rigorous research and field trials.",
+    "search": "Search seed varieties...",
+    "allSeasons": "All Seasons",
+    "showing": "Showing",
+    "varieties": "varieties",
+    "clearFilters": "Clear filters",
+    "noResults": "No varieties found",
+    "noResultsSub": "Try adjusting your search or filters",
+    "viewDetails": "View Details",
+    "enquire": "Enquire on WhatsApp",
+    "call": "Call Us"
+  },
+  "contact": {
+    "heading": "Get in Touch",
+    "sub": "Have questions about our seeds, pricing, or dealership? We'd love to hear from you.",
+    "send": "Send Us a Message",
+    "sendSub": "We typically respond within 24 hours on business days.",
+    "name": "Full Name",
+    "phone": "Mobile Number",
+    "email": "Email Address",
+    "subject": "Subject",
+    "message": "Message",
+    "submit": "Send Message",
+    "sending": "Sending...",
+    "success": "Thank you! We will contact you within 24 hours."
+  },
+  "dealer": {
+    "heading": "Find a Dealer Near You",
+    "sub": "Our authorised dealers across Gujarat, Maharashtra, Rajasthan, and Madhya Pradesh.",
+    "search": "Search by city, district, or dealer name...",
+    "allStates": "All States",
+    "showing": "dealers",
+    "becomeHeading": "Become an Authorised Dealer",
+    "becomeSub": "Join our growing dealer network and bring premium hybrid seeds to your local farming community.",
+    "submit": "Submit Dealer Enquiry"
+  }
+}

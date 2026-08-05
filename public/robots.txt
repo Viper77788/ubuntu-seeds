@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.ubuntuseeds.co.in/sitemap.xml
+
+# Block assets
+Disallow: /src/
+Disallow: /node_modules/
