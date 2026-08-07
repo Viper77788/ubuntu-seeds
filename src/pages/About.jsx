@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Target, Eye, Leaf, Award, Users, FlaskConical, Truck } from 'lucide-react';
+import { Target, Eye, Leaf, Award, FlaskConical, Truck, Quote, Sparkles } from 'lucide-react';
+import SEOHead from '../components/shared/SEOHead';
 
 const timeline = [
   { icon: FlaskConical, step: '01', title: 'Seed Research & Breeding', desc: 'Our scientists work on developing new hybrids through controlled crossing and selection under diverse agro-climatic conditions.' },
@@ -10,6 +11,7 @@ const timeline = [
 ];
 
 const team = [
+  { name: 'Vishal', role: 'Founder & Managing Director', image: '/vishal-founder.jpg', color: '#225D36', isFounder: true },
   { name: 'Dr. Arjun Patel', role: 'Head of Seed Research', initials: 'AP', color: '#225D36' },
   { name: 'Priya Shah', role: 'Quality Assurance Lead', initials: 'PS', color: '#D4873B' },
   { name: 'Vijay Desai', role: 'Business Development', initials: 'VD', color: '#6B4226' },
@@ -17,10 +19,16 @@ const team = [
 ];
 
 export default function About() {
-  useEffect(() => { document.title = 'About Us — Ubuntu Seeds'; }, []);
+  useEffect(() => { document.title = 'About Us & Founder — Ubuntu Seeds'; }, []);
 
   return (
     <>
+      <SEOHead
+        title="About Us & Leadership — Vishal, Founder"
+        description="Learn about Ubuntu Seeds Private Limited, founded by Vishal in December 2022 in Ahmedabad, Gujarat. Research-backed hybrid seeds empowering Indian farmers."
+        path="/about"
+      />
+
       {/* Hero */}
       <section
         className="pt-28 sm:pt-36 pb-12 sm:pb-20 relative overflow-hidden max-w-full"
@@ -30,7 +38,7 @@ export default function About() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="max-w-3xl">
             <span className="inline-block px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium text-amber-200 mb-4 border border-amber-400/40" style={{ backgroundColor: 'rgba(212,135,59,0.2)' }}>
-              Our Story
+              Our Story & Leadership
             </span>
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-display font-bold text-white mb-4 sm:mb-6 leading-tight">
               Seeds of Trust,
@@ -38,15 +46,94 @@ export default function About() {
               <span style={{ color: '#D4873B' }}>Harvests of Hope</span>
             </h1>
             <p className="text-green-200 text-sm sm:text-lg leading-relaxed">
-              Founded in December 2022, Ubuntu Seeds Private Limited was born with a singular mission: to put research-quality hybrid seeds within reach of every Indian farmer — from large farms to small holdings.
+              Founded in December 2022 by Vishal in Ahmedabad, Gujarat, Ubuntu Seeds Private Limited was born with a singular mission: to put research-quality hybrid seeds within reach of every Indian farmer.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Mission & Vision */}
-      <section style={{ backgroundColor: '#FDF8F0' }} className="py-16">
+      {/* Main Content */}
+      <section style={{ backgroundColor: '#FDF8F0' }} className="py-12 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
+
+          {/* 🌟 FOUNDER SPOTLIGHT SECTION 🌟 */}
+          <div className="mb-16">
+            <div className="text-center mb-8">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-green-800 bg-green-100 border border-green-200 mb-2">
+                <Sparkles size={14} className="text-green-700" /> Leadership Spotlight
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-display font-bold text-gray-900">
+                Meet Our <span style={{ color: '#225D36' }}>Founder</span>
+              </h2>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="bg-white rounded-3xl p-6 sm:p-10 shadow-lg border border-gray-100 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center"
+            >
+              {/* Founder Image */}
+              <div className="lg:col-span-5 relative flex justify-center">
+                <div className="relative w-64 sm:w-80 h-80 sm:h-96 rounded-2xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-gray-200">
+                  <img
+                    src="/vishal-founder.jpg"
+                    alt="Vishal — Founder & Managing Director of Ubuntu Seeds"
+                    className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <p className="font-display font-bold text-xl sm:text-2xl">Vishal</p>
+                    <p className="text-amber-300 text-xs sm:text-sm font-medium">Founder & Managing Director</p>
+                  </div>
+                </div>
+
+                {/* Floating Badge */}
+                <div className="absolute -bottom-4 right-2 sm:right-6 bg-amber-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg flex items-center gap-1.5 border border-amber-400">
+                  <span>🌱 Founded Dec 2022</span>
+                </div>
+              </div>
+
+              {/* Founder Bio & Quote */}
+              <div className="lg:col-span-7 space-y-4">
+                <div className="inline-block p-2 rounded-xl bg-green-50 text-green-800">
+                  <Quote size={24} style={{ color: '#225D36' }} />
+                </div>
+                <blockquote className="text-gray-700 text-base sm:text-lg italic leading-relaxed font-medium">
+                  "At Ubuntu Seeds, we believe that true agricultural growth happens when scientific innovation meets the everyday needs of Indian farmers. We founded Ubuntu Seeds in December 2022 with a clear purpose — to empower farmers across Gujarat and India with research-backed, disease-resistant hybrid seeds that guarantee consistent yields and brighter harvests every single season."
+                </blockquote>
+
+                <div className="pt-2 border-t border-gray-100">
+                  <h3 className="font-display font-bold text-xl text-gray-900">Vishal</h3>
+                  <p className="text-sm font-semibold" style={{ color: '#225D36' }}>
+                    Founder & Managing Director, Ubuntu Seeds Pvt. Ltd.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 text-xs sm:text-sm text-gray-600">
+                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                    <span className="text-lg">📍</span>
+                    <span><strong>Based in:</strong> Ahmedabad, Gujarat</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                    <span className="text-lg">🌾</span>
+                    <span><strong>Vision:</strong> Farmer-First Agriculture</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                    <span className="text-lg">🧬</span>
+                    <span><strong>Focus:</strong> High-Yield Hybrid R&D</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                    <span className="text-lg">🤝</span>
+                    <span><strong>Ubuntu Philosophy:</strong> "I am because we are"</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Mission & Vision */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
             {[
               {
@@ -88,7 +175,7 @@ export default function About() {
                 Built on <span style={{ color: '#225D36' }}>Research</span> and <span style={{ color: '#D4873B' }}>Farmer Trust</span>
               </h2>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Ubuntu Seeds Pvt. Ltd. was incorporated on December 22, 2022, and registered with the Registrar of Companies, Ahmedabad. From day one, we invested in agronomic research and multi-location variety trials across Gujarat, Rajasthan, and Maharashtra.
+                Under the leadership of founder Vishal, Ubuntu Seeds Pvt. Ltd. was incorporated on December 22, 2022, and registered with the Registrar of Companies, Ahmedabad. From day one, we invested in agronomic research and multi-location variety trials across Gujarat, Rajasthan, and Maharashtra.
               </p>
               <p className="text-gray-600 leading-relaxed mb-4">
                 The name "Ubuntu" — a Zulu philosophy meaning "I am because we are" — reflects our belief that a farmer's success is our success. Every variety we develop starts with one question: what does the farmer truly need?
@@ -141,29 +228,42 @@ export default function About() {
             </div>
           </div>
 
-          {/* Team */}
+          {/* Team Grid */}
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-display font-bold text-gray-900 mb-2">Our Team</h2>
-            <p className="text-gray-500">The people behind your seeds' success</p>
+            <h2 className="text-3xl font-display font-bold text-gray-900 mb-2">Leadership & Team</h2>
+            <p className="text-gray-500">The people driving research, quality, and farmer support</p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-            {team.map(({ name, role, initials, color }, i) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+            {team.map(({ name, role, initials, image, color, isFounder }, i) => (
               <motion.div
                 key={name}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100"
+                transition={{ duration: 0.4, delay: i * 0.08 }}
+                className={`bg-white rounded-2xl p-5 text-center shadow-sm border ${
+                  isFounder ? 'border-amber-300 ring-2 ring-amber-100' : 'border-gray-100'
+                }`}
               >
-                <div
-                  className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl"
-                  style={{ backgroundColor: color }}
-                >
-                  {initials}
-                </div>
-                <h3 className="font-semibold text-gray-800 text-sm">{name}</h3>
-                <p className="text-gray-400 text-xs mt-1">{role}</p>
+                {image ? (
+                  <img
+                    src={image}
+                    alt={name}
+                    className="w-16 h-16 rounded-full mx-auto mb-3 object-cover shadow-md border-2 border-amber-400"
+                  />
+                ) : (
+                  <div
+                    className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl"
+                    style={{ backgroundColor: color }}
+                  >
+                    {initials}
+                  </div>
+                )}
+                <h3 className="font-semibold text-gray-800 text-sm flex items-center justify-center gap-1">
+                  {name}
+                  {isFounder && <span className="text-xs">👑</span>}
+                </h3>
+                <p className="text-gray-500 text-xs mt-1 leading-snug">{role}</p>
               </motion.div>
             ))}
           </div>
