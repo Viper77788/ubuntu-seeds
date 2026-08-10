@@ -2,19 +2,15 @@ import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
-import { products, CATEGORIES, SEASONS } from '../data/products';
+import { CATEGORIES, SEASONS } from '../data/products';
+import { useProducts } from '../hooks/useData';
 import ProductCard from '../components/products/ProductCard';
 import ProductModal from '../components/products/ProductModal';
-
-const categoryColors = {
-  [CATEGORIES.FIELD]: 'bg-green-100 text-green-800 border-green-200',
-  [CATEGORIES.VEGETABLE]: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  [CATEGORIES.PULSE]: 'bg-amber-100 text-amber-800 border-amber-200',
-  [CATEGORIES.SPICE]: 'bg-orange-100 text-orange-800 border-orange-200',
-};
+import SEOHead from '../components/shared/SEOHead';
 
 export default function Products() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { products, loading } = useProducts();
+  const [searchParams] = useSearchParams();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('cat') || '');
   const [selectedSeason, setSelectedSeason] = useState('');
@@ -29,18 +25,16 @@ export default function Products() {
       const matchesSearch =
         !search ||
         p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.subCategory.toLowerCase().includes(search.toLowerCase()) ||
-        p.tagline.toLowerCase().includes(search.toLowerCase());
+        (p.subCategory && p.subCategory.toLowerCase().includes(search.toLowerCase())) ||
+        (p.tagline && p.tagline.toLowerCase().includes(search.toLowerCase()));
       const matchesCat = !selectedCategory || p.category === selectedCategory;
       const matchesSeason = !selectedSeason || p.season === selectedSeason;
       return matchesSearch && matchesCat && matchesSeason;
     });
-  }, [search, selectedCategory, selectedSeason]);
+  }, [products, search, selectedCategory, selectedSeason]);
 
   const allCategories = Object.values(CATEGORIES);
   const allSeasons = Object.values(SEASONS);
-  // Import SEASONS from products data
-  const SEASONS_IMPORT = { KHARIF: 'Kharif', RABI: 'Rabi', ZAID: 'Zaid', ALL: 'All Season' };
 
   return (
     <>

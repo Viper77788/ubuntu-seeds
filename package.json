@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@supabase/supabase-js": "^2.112.2",
     "framer-motion": "^12.43.0",
     "i18next": "^26.3.6",
     "leaflet": "^1.9.4",

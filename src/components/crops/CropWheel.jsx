@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useCropCalendar } from '../../hooks/useData';
 
-// ── Data ─────────────────────────────────────────────────────────────────────
-const SEASONS = [
+const BASE_SEASONS = [
   {
     id: 'kharif',
     label: 'Kharif',
@@ -12,16 +12,6 @@ const SEASONS = [
     bg: '#FFF8E1',
     glow: 'rgba(212,135,59,0.3)',
     angle: -90, // top
-    crops: [
-      { name: 'Cotton', variety: 'US Cotton 101 / 202', sowing: 'May–Jul' },
-      { name: 'Hybrid Bajra', variety: 'US Bajra Gold', sowing: 'Jun–Jul' },
-      { name: 'Hybrid Corn', variety: 'US Maize Pro 401', sowing: 'Jun–Aug' },
-      { name: 'Sesamum', variety: 'US Sesame Research 1', sowing: 'Jun–Jul' },
-      { name: 'Okra', variety: 'US Okra Supreme', sowing: 'All Season' },
-      { name: 'Bitter Gourd', variety: 'US Karela Pro', sowing: 'Jun–Aug' },
-      { name: 'Cucumber', variety: 'US Cucumber Fresh', sowing: 'All Season' },
-      { name: 'Moong', variety: 'US Moong Gold', sowing: 'Jun–Jul' },
-    ],
   },
   {
     id: 'rabi',
@@ -32,16 +22,6 @@ const SEASONS = [
     bg: '#E8F5E9',
     glow: 'rgba(34,93,54,0.3)',
     angle: 30, // bottom-right
-    crops: [
-      { name: 'Wheat', variety: 'US Wheat Research 1', sowing: 'Oct–Nov' },
-      { name: 'Hybrid Corn', variety: 'US Maize Pro 401', sowing: 'Oct–Nov' },
-      { name: 'Cumin (Jeera)', variety: 'US Cumin Select', sowing: 'Nov–Dec' },
-      { name: 'Mustard', variety: 'US Mustard Bold', sowing: 'Oct–Nov' },
-      { name: 'Cabbage', variety: 'US Cabbage King', sowing: 'Sep–Nov' },
-      { name: 'Tomato', variety: 'US Tomato King', sowing: 'Aug–Nov' },
-      { name: 'Carrot', variety: 'US Carrot Orange', sowing: 'Oct–Nov' },
-      { name: 'Radish', variety: 'US Radish White', sowing: 'Rabi/Winter' },
-    ],
   },
   {
     id: 'zaid',
@@ -52,205 +32,150 @@ const SEASONS = [
     bg: '#FBE9E7',
     glow: 'rgba(107,66,38,0.3)',
     angle: 150, // bottom-left
-    crops: [
-      { name: 'Okra', variety: 'US Okra Supreme', sowing: 'Feb–May' },
-      { name: 'Cucumber', variety: 'US Cucumber Fresh', sowing: 'Feb–Apr' },
-      { name: 'Ridge Gourd', variety: 'US Turai Select', sowing: 'Feb–Apr' },
-      { name: 'Bottle Gourd', variety: 'US Lauki Long', sowing: 'Feb–Apr' },
-      { name: 'Cowpea', variety: 'US Cowpea Strong', sowing: 'Mar–May' },
-      { name: 'Moong', variety: 'US Moong Gold', sowing: 'Feb–Apr' },
-      { name: 'Sesamum', variety: 'US Sesame Research 1', sowing: 'Feb–May' },
-    ],
   },
 ];
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function polarToXY(angleDeg, r, cx = 200, cy = 200) {
-  const rad = (angleDeg * Math.PI) / 180;
-  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-}
-
-// ── Component ─────────────────────────────────────────────────────────────────
 export default function CropWheel() {
-  const [active, setActive] = useState(SEASONS[0]);
+  const { cropCalendar } = useCropCalendar();
+  const [activeSeason, setActiveSeason] = useState('kharif');
 
-  const CX = 200, CY = 200, R_OUTER = 155, R_INNER = 72, R_LABEL = 125, R_DOT = 160;
+  const seasonsData = useMemo(() => {
+    return BASE_SEASONS.map((s) => {
+      const seasonCrops = cropCalendar
+        .filter((item) => item.season.toLowerCase() === s.id)
+        .map((item) => ({
+          name: item.crop_name,
+          variety: item.variety_name,
+          sowing: item.sowing_window,
+        }));
+      return {
+        ...s,
+        crops: seasonCrops.length > 0 ? seasonCrops : [],
+      };
+    });
+  }, [cropCalendar]);
 
-  // Build SVG arc segments (3 equal segments of 120°)
-  function describeArc(startAngle, endAngle, r) {
-    const gap = 4; // degrees gap between segments
-    const s = polarToXY(startAngle + gap / 2, r);
-    const e = polarToXY(endAngle - gap / 2, r);
-    const si = polarToXY(startAngle + gap / 2, R_INNER + 4);
-    const ei = polarToXY(endAngle - gap / 2, R_INNER + 4);
-    const large = endAngle - startAngle > 180 ? 1 : 0;
-    return [
-      `M ${si.x} ${si.y}`,
-      `L ${s.x} ${s.y}`,
-      `A ${r} ${r} 0 ${large} 1 ${e.x} ${e.y}`,
-      `L ${ei.x} ${ei.y}`,
-      `A ${R_INNER + 4} ${R_INNER + 4} 0 ${large} 0 ${si.x} ${si.y}`,
-      'Z',
-    ].join(' ');
-  }
+  const activeData = seasonsData.find((s) => s.id === activeSeason) || seasonsData[0];
 
   return (
-    <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
-      {/* ── Wheel SVG ── */}
-      <div className="relative w-full max-w-[320px] sm:max-w-[360px] aspect-square mx-auto shrink-0">
-        <svg viewBox="0 0 400 400" className="w-full h-full drop-shadow-xl">
-          {/* Outer ring background */}
-          <circle cx={CX} cy={CY} r={R_OUTER + 12} fill="#f5f5f0" />
-
-          {/* Season segments */}
-          {SEASONS.map((season, i) => {
-            const startAngle = i * 120 - 90;
-            const endAngle = startAngle + 120;
-            const isActive = active.id === season.id;
-            const d = describeArc(startAngle, endAngle, R_OUTER);
-            const labelPos = polarToXY(startAngle + 60, R_LABEL);
-            const dotPos = polarToXY(startAngle + 60, R_DOT + 10);
-
-            return (
-              <g
-                key={season.id}
-                onClick={() => setActive(season)}
-                className="cursor-pointer"
-                style={{ transition: 'all 0.3s' }}
-              >
-                {/* Glow for active */}
-                {isActive && (
-                  <circle
-                    cx={dotPos.x}
-                    cy={dotPos.y}
-                    r={18}
-                    fill={season.glow}
-                    className="animate-pulse"
-                  />
-                )}
-                {/* Segment */}
-                <path
-                  d={d}
-                  fill={isActive ? season.color : season.bg}
-                  stroke="white"
-                  strokeWidth="3"
-                  style={{ filter: isActive ? `drop-shadow(0 0 8px ${season.glow})` : 'none', transition: 'all 0.3s' }}
-                />
-                {/* Season label inside segment */}
-                <text
-                  x={labelPos.x}
-                  y={labelPos.y - 8}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fontSize="13"
-                  fontWeight="700"
-                  fontFamily="Poppins, sans-serif"
-                  fill={isActive ? 'white' : season.color}
-                  style={{ transition: 'fill 0.3s' }}
-                >
-                  {season.label}
-                </text>
-                <text
-                  x={labelPos.x}
-                  y={labelPos.y + 9}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fontSize="9"
-                  fontFamily="Inter, sans-serif"
-                  fill={isActive ? 'rgba(255,255,255,0.8)' : '#999'}
-                  style={{ transition: 'fill 0.3s' }}
-                >
-                  {season.sublabel}
-                </text>
-                {/* Emoji dot */}
-                <text
-                  x={dotPos.x}
-                  y={dotPos.y}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fontSize="18"
-                >
-                  {season.emoji}
-                </text>
-              </g>
-            );
-          })}
-
-          {/* Inner circle hub */}
-          <circle cx={CX} cy={CY} r={R_INNER} fill="white" stroke="#e5e7eb" strokeWidth="2" />
-          <text x={CX} y={CY - 10} textAnchor="middle" dominantBaseline="middle" fontSize="22" fontWeight="800" fontFamily="Poppins, sans-serif" fill={active.color} style={{ transition: 'fill 0.4s' }}>
-            {active.emoji}
-          </text>
-          <text x={CX} y={CY + 10} textAnchor="middle" dominantBaseline="middle" fontSize="10" fontWeight="600" fontFamily="Poppins, sans-serif" fill={active.color} style={{ transition: 'fill 0.4s' }}>
-            {active.crops.length} Crops
-          </text>
-          <text x={CX} y={CY + 24} textAnchor="middle" dominantBaseline="middle" fontSize="8" fontFamily="Inter, sans-serif" fill="#aaa">
-            tap to explore
-          </text>
-        </svg>
-
-        {/* Rotating ring markers */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          {[0, 120, 240].map((deg, i) => {
-            const rad = ((deg - 90) * Math.PI) / 180;
-            const x = 180 + 168 * Math.cos(rad);
-            const y = 180 + 168 * Math.sin(rad);
-            return (
-              <div
-                key={i}
-                className="absolute w-2 h-2 rounded-full bg-gray-300"
-                style={{ left: x, top: y, transform: 'translate(-50%, -50%)' }}
-              />
-            );
-          })}
-        </div>
+    <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-amber-100/60 max-w-4xl mx-auto my-8">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-200 mb-2">
+          Interactive Wheel
+        </span>
+        <h2 className="text-2xl md:text-3xl font-display font-bold text-gray-900">
+          Seasonal Sowing Calendar
+        </h2>
+        <p className="text-gray-500 text-sm mt-1">Select a season to view recommended Ubuntu hybrid seed varieties</p>
       </div>
 
-      {/* ── Crop list panel ── */}
-      <div className="flex-1 min-w-0">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={active.id}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold mb-3"
-              style={{ backgroundColor: active.bg, color: active.color }}
-            >
-              {active.emoji} {active.label} Season · {active.sublabel}
-            </div>
-            <h3 className="text-2xl font-display font-bold text-gray-900 mb-5">
-              Crops to Sow This Season
-            </h3>
-            <div className="space-y-2">
-              {active.crops.map((crop, i) => (
-                <motion.div
-                  key={crop.name}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25, delay: i * 0.05 }}
-                  className="flex items-start gap-3 p-3 rounded-xl border hover:shadow-sm transition-all bg-white"
-                  style={{ borderColor: active.color + '25' }}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+        {/* Wheel graphic */}
+        <div className="md:col-span-5 flex flex-col items-center justify-center">
+          <div className="relative w-64 h-64 flex items-center justify-center">
+            {/* Outer ring */}
+            <div className="absolute inset-0 rounded-full border-2 border-dashed border-gray-200 animate-spin-slow" style={{ animationDuration: '60s' }} />
+
+            {/* Season buttons positioned in a circle */}
+            {seasonsData.map((season) => {
+              const isActive = activeSeason === season.id;
+              const rad = (season.angle * Math.PI) / 180;
+              const radius = 95; // px from center
+              const x = Math.round(radius * Math.cos(rad));
+              const y = Math.round(radius * Math.sin(rad));
+
+              return (
+                <button
+                  key={season.id}
+                  onClick={() => setActiveSeason(season.id)}
+                  style={{
+                    transform: `translate(${x}px, ${y}px)`,
+                    borderColor: isActive ? season.color : 'transparent',
+                    boxShadow: isActive ? `0 0 20px ${season.glow}` : '0 2px 8px rgba(0,0,0,0.08)',
+                  }}
+                  className={`absolute w-20 h-20 rounded-2xl flex flex-col items-center justify-center transition-all duration-300 ${
+                    isActive ? 'scale-110 z-20 text-white font-bold' : 'bg-white text-gray-700 hover:scale-105 z-10 border border-gray-100'
+                  }`}
                 >
                   <div
-                    className="w-1.5 h-full min-h-8 rounded-full shrink-0 mt-1"
-                    style={{ backgroundColor: active.color }}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline justify-between gap-2 flex-wrap">
-                      <span className="font-semibold text-gray-900 text-sm">{crop.name}</span>
-                      <span className="text-xs text-gray-400 shrink-0">{crop.sowing}</span>
-                    </div>
-                    <p className="text-xs mt-0.5" style={{ color: active.color }}>{crop.variety}</p>
+                    className={`w-full h-full rounded-2xl flex flex-col items-center justify-center p-1 transition-all ${
+                      isActive ? '' : ''
+                    }`}
+                    style={{ backgroundColor: isActive ? season.color : season.bg }}
+                  >
+                    <span className="text-xl mb-0.5">{season.emoji}</span>
+                    <span className={`text-xs ${isActive ? 'text-white font-bold' : 'text-gray-800 font-semibold'}`}>{season.label}</span>
+                    <span className={`text-[10px] ${isActive ? 'text-white/80' : 'text-gray-500'}`}>{season.sublabel}</span>
                   </div>
-                </motion.div>
-              ))}
+                </button>
+              );
+            })}
+
+            {/* Center hub */}
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-800 to-green-900 text-white flex flex-col items-center justify-center text-center shadow-lg border-2 border-white z-10">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-amber-300">Ubuntu</span>
+              <span className="text-[9px] text-white/80">Calendar</span>
             </div>
-          </motion.div>
-        </AnimatePresence>
+          </div>
+
+          <div className="flex gap-2 mt-6 md:hidden">
+            {seasonsData.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setActiveSeason(s.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  activeSeason === s.id ? 'text-white shadow-md' : 'bg-gray-100 text-gray-600'
+                }`}
+                style={activeSeason === s.id ? { backgroundColor: s.color } : {}}
+              >
+                {s.emoji} {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Selected season details */}
+        <div className="md:col-span-7">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSeason}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="rounded-2xl p-6 border border-gray-100 shadow-sm"
+              style={{ backgroundColor: activeData.bg }}
+            >
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-black/5">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">{activeData.emoji}</span>
+                  <div>
+                    <h3 className="font-display font-bold text-xl text-gray-900">{activeData.label} Season</h3>
+                    <p className="text-xs font-medium text-gray-500">Sowing Period: {activeData.sublabel}</p>
+                  </div>
+                </div>
+                <span className="text-xs font-bold px-3 py-1 rounded-full text-white shadow-xs" style={{ backgroundColor: activeData.color }}>
+                  {activeData.crops.length} Recommended Varieties
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-72 overflow-y-auto pr-1">
+                {activeData.crops.map((crop, i) => (
+                  <div key={i} className="bg-white/90 backdrop-blur-xs p-3 rounded-xl border border-black/5 shadow-2xs">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-bold text-gray-900 text-xs">{crop.name}</h4>
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-50 text-green-800 border border-green-200">
+                        {crop.sowing}
+                      </span>
+                    </div>
+                    <p className="text-[11px] font-medium text-amber-900 mt-1">{crop.variety}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

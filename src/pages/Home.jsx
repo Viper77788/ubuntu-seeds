@@ -3,9 +3,8 @@ import SEOHead from '../components/shared/SEOHead';
 import { Link } from 'react-router-dom';
 import { motion, useInView, useAnimation } from 'framer-motion';
 import { ArrowRight, CheckCircle, Star, Phone, Mail, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
-import { products, CATEGORIES } from '../data/products';
-import { testimonials } from '../data/testimonials';
-import { newsArticles } from '../data/news';
+import { CATEGORIES } from '../data/products';
+import { useProducts, useTestimonials, useNews } from '../hooks/useData';
 import ProductModal from '../components/products/ProductModal';
 import ProductCard from '../components/products/ProductCard';
 

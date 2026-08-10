@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Search, MapPin, Phone, Building2 } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { dealers, STATES } from '../data/dealers';
+import { STATES } from '../data/dealers';
+import { useDealers } from '../hooks/useData';
 import toast from 'react-hot-toast';
 import emailjs from '@emailjs/browser';
 import SEOHead from '../components/shared/SEOHead';
@@ -28,13 +29,6 @@ const greenIcon = new L.DivIcon({
 
 // Approximate coords for each dealer city
 const DEALER_COORDS = {
-  1:  [23.0225, 72.5714], // Ahmedabad
-  2:  [22.3039, 70.8022], // Rajkot
-  3:  [22.4707, 70.0577], // Jamnagar
-  4:  [23.5880, 72.3693], // Mehsana
-  5:  [22.5645, 72.9289], // Anand
-  6:  [22.7196, 71.6686], // Surendranagar
-  7:  [21.0077, 75.5626], // Jalgaon
   8:  [20.7002, 77.0082], // Akola
   9:  [26.2389, 73.0243], // Jodhpur
   10: [22.7196, 75.8577], // Indore

@@ -1,30 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ZoomIn, Image as ImageIcon } from 'lucide-react';
 import SEOHead from '../components/shared/SEOHead';
-
-const galleryItems = [
-  { id: 1, src: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&q=80', alt: 'Farmers in Cotton Field', category: 'Field Days' },
-  { id: 2, src: 'https://images.unsplash.com/photo-1595841696677-6489ff3f8cd1?w=800&q=80', alt: 'Cotton Crop Close-up', category: 'Field Crops' },
-  { id: 3, src: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=800&q=80', alt: 'Hybrid Corn / Maize Field', category: 'Field Crops' },
-  { id: 4, src: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=800&q=80', alt: 'Wheat Crop Field Day', category: 'Field Days' },
-  { id: 5, src: 'https://images.unsplash.com/photo-1621955964441-c173e01c135b?w=800&q=80', alt: 'Fresh Okra Harvest', category: 'Vegetables' },
-  { id: 6, src: 'https://images.unsplash.com/photo-1604977042946-1eecc30f269e?w=800&q=80', alt: 'Crispy Cucumber Field', category: 'Vegetables' },
-  { id: 7, src: 'https://images.unsplash.com/photo-1561136594-7f68413baa99?w=800&q=80', alt: 'Tomato King Harvest', category: 'Vegetables' },
-  { id: 8, src: 'https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=800&q=80', alt: 'Cumin & Spice Crop Trial', category: 'Spice Crops' },
-  { id: 9, src: 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=800&q=80', alt: 'Hot Chilli Pepper Plot', category: 'Vegetables' },
-  { id: 10, src: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800&q=80', alt: 'Green Gram Moong Harvest', category: 'Pulses' },
-  { id: 11, src: 'https://images.unsplash.com/photo-1508737027454-e6454ef45afd?w=800&q=80', alt: 'Pumpkin & Gourd Crop', category: 'Vegetables' },
-  { id: 12, src: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=800&q=80', alt: 'Carrot Farm Harvest', category: 'Vegetables' },
-];
-
-const CATS = ['All', ...new Set(galleryItems.map((g) => g.category))];
+import { useGallery } from '../hooks/useData';
 
 export default function Gallery() {
+  const { galleryItems } = useGallery();
   const [selectedCat, setSelectedCat] = useState('All');
   const [lightbox, setLightbox] = useState(null);
 
   useEffect(() => { document.title = 'Gallery — Ubuntu Seeds'; }, []);
+
+  const CATS = useMemo(() => ['All', ...new Set(galleryItems.map((g) => g.category))], [galleryItems]);
 
   const filtered = galleryItems.filter((g) => selectedCat === 'All' || g.category === selectedCat);
 
