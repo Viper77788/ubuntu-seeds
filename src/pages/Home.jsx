@@ -61,14 +61,17 @@ const usps = [
 ];
 
 export default function Home() {
+  const { products } = useProducts();
+  const { testimonials } = useTestimonials();
+  const { newsArticles } = useNews();
+
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [testimonialIdx, setTestimonialIdx] = useState(0);
-  const featuredProducts = products.filter((p) => p.featured);
 
-  // Title managed by SEOHead via react-helmet-async
+  const featuredProducts = (products || []).filter((p) => p.featured);
 
-  const prevTestimonial = () => setTestimonialIdx((i) => (i === 0 ? testimonials.length - 1 : i - 1));
-  const nextTestimonial = () => setTestimonialIdx((i) => (i === testimonials.length - 1 ? 0 : i + 1));
+  const prevTestimonial = () => setTestimonialIdx((i) => (i === 0 ? (testimonials.length ? testimonials.length - 1 : 0) : i - 1));
+  const nextTestimonial = () => setTestimonialIdx((i) => (i === (testimonials.length ? testimonials.length - 1 : 0) ? 0 : i + 1));
 
   return (
     <>
