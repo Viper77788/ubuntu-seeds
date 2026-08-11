@@ -251,7 +251,6 @@ export function useDealers() {
             id: d.id,
             name: d.name,
             contact: 'Agri Manager',
-            phone: d.phone,
             address: d.address,
             city: d.district,
             district: d.district,

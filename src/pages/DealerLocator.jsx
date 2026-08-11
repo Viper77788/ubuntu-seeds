@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Search, MapPin, Phone, Building2 } from 'lucide-react';
+import { Search, MapPin, Building2 } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -201,8 +201,7 @@ export default function DealerLocator() {
                     <Popup>
                       <div className="text-sm">
                         <strong>{dealer.name}</strong><br />
-                        {dealer.city || dealer.district}, {dealer.state}<br />
-                        <a href={`tel:${(dealer.phone || '').replace(/\s/g, '')}`} style={{ color: '#225D36' }}>{dealer.phone}</a>
+                        {dealer.city || dealer.district}, {dealer.state}
                       </div>
                     </Popup>
                   </Marker>
@@ -274,10 +273,6 @@ export default function DealerLocator() {
                   <div className="flex items-start gap-2 text-xs text-gray-500">
                     <MapPin size={12} className="mt-0.5 shrink-0" style={{ color: '#225D36' }} />
                     <span>{dealer.address}, {dealer.state}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <Phone size={12} style={{ color: '#D4873B' }} />
-                    <a href={`tel:${dealer.phone.replace(/\s/g, '')}`} className="font-medium" style={{ color: '#D4873B' }}>{dealer.phone}</a>
                   </div>
                 </div>
                 {dealer.products && Array.isArray(dealer.products) && (
