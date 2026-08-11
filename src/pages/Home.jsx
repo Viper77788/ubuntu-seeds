@@ -266,10 +266,22 @@ export default function Home() {
 
           <div className="relative max-w-3xl mx-auto">
             {(() => {
-              const currentTestimonial = (testimonials && testimonials.length > 0)
-                ? (testimonials[testimonialIdx] || testimonials[0])
-                : null;
+              const safeList = (testimonials && Array.isArray(testimonials) && testimonials.length > 0)
+                ? testimonials
+                : [
+                    {
+                      id: 1,
+                      name: 'Ramesh Patel',
+                      location: 'Saurashtra, Gujarat',
+                      crop: 'US Cotton 101',
+                      rating: 5,
+                      text: 'Ubuntu Seeds ne amara cotton nu utpadan 30% vadharyun. Bollworm ni koi samasya nathi ane boll size pan khub saras che.',
+                      avatar: 'RP',
+                      bgColor: '#225D36',
+                    }
+                  ];
 
+              const currentTestimonial = safeList[testimonialIdx % safeList.length] || safeList[0];
               if (!currentTestimonial) return null;
 
               return (
@@ -318,7 +330,7 @@ export default function Home() {
                 <ChevronLeft size={20} />
               </button>
               <div className="flex gap-2 items-center">
-                {testimonials.map((_, i) => (
+                {(testimonials || []).map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setTestimonialIdx(i)}
