@@ -242,13 +242,24 @@ export default function Home() {
               </Link>
             </div>
           </FadeIn>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {featuredProducts.map((product, i) => (
-              <FadeIn key={product.id} delay={i * 0.1}>
-                <ProductCard product={product} onClick={setSelectedProduct} />
-              </FadeIn>
-            ))}
-          </div>
+          {featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {featuredProducts.map((product, i) => (
+                <FadeIn key={product.id} delay={i * 0.1}>
+                  <ProductCard product={product} onClick={setSelectedProduct} />
+                </FadeIn>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white rounded-3xl p-12 text-center border border-gray-200/80 shadow-xs max-w-xl mx-auto">
+              <div className="text-5xl mb-3">🌱</div>
+              <h3 className="text-lg font-bold text-gray-800 font-display">No Featured Varieties Listed Yet</h3>
+              <p className="text-xs text-gray-500 mt-1">Explore all research hybrid seeds in our catalog.</p>
+              <Link to="/products" className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-xl text-xs font-bold text-white bg-green-800 hover:bg-green-900 transition-colors">
+                Browse Seed Catalog <ArrowRight size={14} />
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
@@ -265,89 +276,84 @@ export default function Home() {
           </FadeIn>
 
           <div className="relative max-w-3xl mx-auto">
-            {(() => {
-              const safeList = (testimonials && Array.isArray(testimonials) && testimonials.length > 0)
-                ? testimonials
-                : [
-                    {
-                      id: 1,
-                      name: 'Ramesh Patel',
-                      location: 'Saurashtra, Gujarat',
-                      crop: 'US Cotton 101',
-                      rating: 5,
-                      text: 'Ubuntu Seeds ne amara cotton nu utpadan 30% vadharyun. Bollworm ni koi samasya nathi ane boll size pan khub saras che.',
-                      avatar: 'RP',
-                      bgColor: '#225D36',
-                    }
-                  ];
+            {testimonials && testimonials.length > 0 ? (
+              <>
+                {(() => {
+                  const currentTestimonial = testimonials[testimonialIdx % testimonials.length] || testimonials[0];
+                  if (!currentTestimonial) return null;
 
-              const currentTestimonial = safeList[testimonialIdx % safeList.length] || safeList[0];
-              if (!currentTestimonial) return null;
+                  return (
+                    <motion.div
+                      key={testimonialIdx}
+                      initial={{ opacity: 0, x: 30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -30 }}
+                      transition={{ duration: 0.4 }}
+                      className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20 text-center"
+                    >
+                      {/* Stars */}
+                      <div className="flex justify-center gap-1 mb-4">
+                        {Array.from({ length: currentTestimonial.rating || 5 }).map((_, i) => (
+                          <Star key={i} size={18} className="fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
 
-              return (
-                <motion.div
-                  key={testimonialIdx}
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -30 }}
-                  transition={{ duration: 0.4 }}
-                  className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20 text-center"
-                >
-                  {/* Stars */}
-                  <div className="flex justify-center gap-1 mb-4">
-                    {Array.from({ length: currentTestimonial.rating || 5 }).map((_, i) => (
-                      <Star key={i} size={18} className="fill-amber-400 text-amber-400" />
+                      <p className="text-white text-lg leading-relaxed italic mb-6">
+                        "{currentTestimonial.text}"
+                      </p>
+
+                      <div className="flex items-center justify-center gap-3">
+                        <div
+                          className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white text-lg"
+                          style={{ backgroundColor: currentTestimonial.bgColor || '#225D36' }}
+                        >
+                          {currentTestimonial.avatar}
+                        </div>
+                        <div className="text-left">
+                          <p className="font-semibold text-white">{currentTestimonial.name}</p>
+                          <p className="text-green-300 text-sm">{currentTestimonial.location} • {currentTestimonial.crop}</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })()}
+
+                {/* Navigation */}
+                <div className="flex justify-center gap-4 mt-8">
+                  <button
+                    onClick={prevTestimonial}
+                    className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-all"
+                    aria-label="Previous testimonial"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <div className="flex gap-2 items-center">
+                    {testimonials.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setTestimonialIdx(i)}
+                        className={`rounded-full transition-all ${i === testimonialIdx ? 'w-6 h-3' : 'w-3 h-3'}`}
+                        style={{ backgroundColor: i === testimonialIdx ? '#D4873B' : 'rgba(255,255,255,0.4)' }}
+                        aria-label={`Go to testimonial ${i + 1}`}
+                      />
                     ))}
                   </div>
-
-                  <p className="text-white text-lg leading-relaxed italic mb-6">
-                    "{currentTestimonial.text}"
-                  </p>
-
-                  <div className="flex items-center justify-center gap-3">
-                    <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white text-lg"
-                      style={{ backgroundColor: currentTestimonial.bgColor || '#225D36' }}
-                    >
-                      {currentTestimonial.avatar}
-                    </div>
-                    <div className="text-left">
-                      <p className="font-semibold text-white">{currentTestimonial.name}</p>
-                      <p className="text-green-300 text-sm">{currentTestimonial.location} • {currentTestimonial.crop}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })()}
-
-            {/* Navigation */}
-            <div className="flex justify-center gap-4 mt-8">
-              <button
-                onClick={prevTestimonial}
-                className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-all"
-                aria-label="Previous testimonial"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <div className="flex gap-2 items-center">
-                {(testimonials || []).map((_, i) => (
                   <button
-                    key={i}
-                    onClick={() => setTestimonialIdx(i)}
-                    className={`rounded-full transition-all ${i === testimonialIdx ? 'w-6 h-3' : 'w-3 h-3'}`}
-                    style={{ backgroundColor: i === testimonialIdx ? '#D4873B' : 'rgba(255,255,255,0.4)' }}
-                    aria-label={`Go to testimonial ${i + 1}`}
-                  />
-                ))}
+                    onClick={nextTestimonial}
+                    className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-all"
+                    aria-label="Next testimonial"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-10 border border-white/20 text-center text-white">
+                <div className="text-5xl mb-3">💬</div>
+                <h3 className="text-xl font-bold font-display text-white mb-1">Farmer Reviews Coming Soon</h3>
+                <p className="text-green-200 text-xs">We are currently gathering new field trial reviews from our partner farmers across Gujarat & Maharashtra.</p>
               </div>
-              <button
-                onClick={nextTestimonial}
-                className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-all"
-                aria-label="Next testimonial"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
+            )}
           </div>
         </div>
       </section>
@@ -368,26 +374,34 @@ export default function Home() {
               </Link>
             </div>
           </FadeIn>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {newsArticles.slice(0, 3).map((article, i) => (
-              <FadeIn key={article.id} delay={i * 0.1}>
-                <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 card-hover">
-                  <div className="h-44 overflow-hidden">
-                    <img src={article.image} alt={article.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" />
-                  </div>
-                  <div className="p-5">
-                    <div className="flex gap-2 mb-3">
-                      <span className="text-xs font-medium px-2 py-1 rounded-full" style={{ backgroundColor: '#E8F5E9', color: '#225D36' }}>{article.category}</span>
-                      <span className="text-xs text-gray-400">{article.readTime} read</span>
+
+          {newsArticles && newsArticles.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {newsArticles.slice(0, 3).map((article, i) => (
+                <FadeIn key={article.id} delay={i * 0.1}>
+                  <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 card-hover">
+                    <div className="h-44 overflow-hidden">
+                      <img src={article.image} alt={article.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" />
                     </div>
-                    <h3 className="font-display font-bold text-gray-900 text-base mb-2 line-clamp-2 hover:text-green-700 transition-colors cursor-pointer">{article.title}</h3>
-                    <p className="text-gray-500 text-sm line-clamp-2">{article.excerpt}</p>
-                    <p className="text-xs text-gray-400 mt-3">{new Date(article.date).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    <div className="p-5">
+                      <div className="flex gap-2 mb-3 items-center justify-between">
+                        <span className="text-xs font-medium px-2 py-1 rounded-full" style={{ backgroundColor: '#E8F5E9', color: '#225D36' }}>{article.category}</span>
+                        <span className="text-xs text-gray-400">{article.readTime} read</span>
+                      </div>
+                      <h3 className="font-display font-bold text-gray-900 text-base mb-2 line-clamp-2 hover:text-green-700 transition-colors cursor-pointer">{article.title}</h3>
+                      <p className="text-gray-500 text-xs mb-4 line-clamp-2">{article.excerpt}</p>
+                    </div>
                   </div>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
+                </FadeIn>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-gray-50 rounded-3xl p-10 text-center border border-gray-200/80 max-w-xl mx-auto">
+              <div className="text-5xl mb-3">📰</div>
+              <h3 className="text-lg font-bold text-gray-800 font-display">No Advisory Articles Published Yet</h3>
+              <p className="text-xs text-gray-500 mt-1">Seasonal agronomy guides and research updates will be posted soon.</p>
+            </div>
+          )}
         </div>
       </section>
 

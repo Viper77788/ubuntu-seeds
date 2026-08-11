@@ -1,46 +1,18 @@
 import { useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
-import { products as staticProducts } from '../data/products';
-import { testimonials as staticTestimonials } from '../data/testimonials';
-import { newsArticles as staticNews } from '../data/news';
-import { dealers as staticDealers } from '../data/dealers';
-
-// Static Fallback for Gallery
-const staticGallery = [
-  { id: 1, src: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&q=80', alt: 'Farmers in Cotton Field', category: 'Field Days' },
-  { id: 2, src: 'https://images.unsplash.com/photo-1595841696677-6489ff3f8cd1?w=800&q=80', alt: 'Cotton Crop Close-up', category: 'Field Crops' },
-  { id: 3, src: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=800&q=80', alt: 'Hybrid Corn / Maize Field', category: 'Field Crops' },
-  { id: 4, src: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=800&q=80', alt: 'Wheat Crop Field Day', category: 'Field Days' },
-  { id: 5, src: 'https://images.unsplash.com/photo-1621955964441-c173e01c135b?w=800&q=80', alt: 'Fresh Okra Harvest', category: 'Vegetables' },
-  { id: 6, src: 'https://images.unsplash.com/photo-1604977042946-1eecc30f269e?w=800&q=80', alt: 'Crispy Cucumber Field', category: 'Vegetables' },
-  { id: 7, src: 'https://images.unsplash.com/photo-1561136594-7f68413baa99?w=800&q=80', alt: 'Tomato Glory Harvest', category: 'Vegetables' },
-  { id: 8, src: 'https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=800&q=80', alt: 'Cumin & Spice Crop Trial', category: 'Spice Crops' },
-];
-
-// Static Fallback for Crop Calendar
-const staticCropCalendar = [
-  { id: 1, season: 'Kharif', crop_name: 'Cotton', variety_name: 'Ubuntu 555', sowing_window: 'May–Jul', display_order: 1 },
-  { id: 2, season: 'Kharif', crop_name: 'Hybrid Bajra', variety_name: 'Ubuntu Vajra', sowing_window: 'Jun–Jul', display_order: 2 },
-  { id: 3, season: 'Kharif', crop_name: 'Hybrid Corn', variety_name: 'Ubuntu Master', sowing_window: 'Jun–Aug', display_order: 3 },
-  { id: 4, season: 'Kharif', crop_name: 'Research Seeds', variety_name: 'Ubuntu 365', sowing_window: 'Jun–Jul', display_order: 4 },
-  { id: 5, season: 'Kharif', crop_name: 'Okra', variety_name: 'Ubuntu Okra Royal', sowing_window: 'All Season', display_order: 5 },
-  { id: 6, season: 'Rabi', crop_name: 'Tomato', variety_name: 'Ubuntu Glory', sowing_window: 'Aug–Nov', display_order: 6 },
-  { id: 7, season: 'Rabi', crop_name: 'Cumin (Jeera)', variety_name: 'Ubuntu 2530', sowing_window: 'Nov–Dec', display_order: 7 },
-  { id: 8, season: 'Zaid', crop_name: 'Cucumber', variety_name: 'Ubuntu 4045', sowing_window: 'Feb–Apr', display_order: 8 },
-];
 
 /**
- * Hook to fetch products (Supabase with static fallback)
+ * Pure dynamic client-side hook for Products (Supabase)
  */
 export function useProducts() {
-  const [products, setProducts] = useState(staticProducts);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchProducts() {
       if (!isSupabaseConfigured || !supabase) {
-        setProducts(staticProducts);
+        setProducts([]);
         setLoading(false);
         return;
       }
@@ -52,9 +24,9 @@ export function useProducts() {
           .select('*')
           .order('created_at', { ascending: true });
 
-        if (dbError || !dbProducts || dbProducts.length === 0) {
-          setProducts(staticProducts);
-        } else {
+        if (dbError) throw dbError;
+
+        if (dbProducts && Array.isArray(dbProducts)) {
           const formatted = dbProducts.map((p) => ({
             id: p.id,
             name: p.name,
@@ -72,11 +44,13 @@ export function useProducts() {
             specs: typeof p.specs === 'string' ? JSON.parse(p.specs) : (p.specs || []),
           }));
           setProducts(formatted);
+        } else {
+          setProducts([]);
         }
       } catch (err) {
-        console.warn('Supabase fetch failed, falling back to static products:', err);
+        console.error('Error fetching products from Supabase:', err);
         setError(err);
-        setProducts(staticProducts);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -89,17 +63,17 @@ export function useProducts() {
 }
 
 /**
- * Hook to fetch testimonials (Supabase with static fallback)
+ * Pure dynamic client-side hook for Testimonials (Supabase)
  */
 export function useTestimonials() {
-  const [testimonials, setTestimonials] = useState(staticTestimonials);
+  const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchTestimonials() {
       if (!isSupabaseConfigured || !supabase) {
-        setTestimonials(staticTestimonials);
+        setTestimonials([]);
         setLoading(false);
         return;
       }
@@ -111,9 +85,9 @@ export function useTestimonials() {
           .select('*')
           .order('created_at', { ascending: true });
 
-        if (dbError || !data || data.length === 0) {
-          setTestimonials(staticTestimonials);
-        } else {
+        if (dbError) throw dbError;
+
+        if (data && Array.isArray(data)) {
           setTestimonials(data.map((t, idx) => ({
             id: t.id,
             name: t.farmer_name,
@@ -125,11 +99,13 @@ export function useTestimonials() {
             avatar: t.avatar_initials || 'US',
             bgColor: idx % 3 === 0 ? '#225D36' : idx % 3 === 1 ? '#D4873B' : '#6B4226',
           })));
+        } else {
+          setTestimonials([]);
         }
       } catch (err) {
-        console.warn('Supabase fetch failed, falling back to static testimonials:', err);
+        console.error('Error fetching testimonials from Supabase:', err);
         setError(err);
-        setTestimonials(staticTestimonials);
+        setTestimonials([]);
       } finally {
         setLoading(false);
       }
@@ -138,21 +114,21 @@ export function useTestimonials() {
     fetchTestimonials();
   }, []);
 
-  return { testimonials: testimonials || staticTestimonials, loading, error };
+  return { testimonials, loading, error };
 }
 
 /**
- * Hook to fetch news (Supabase with static fallback)
+ * Pure dynamic client-side hook for News (Supabase)
  */
 export function useNews() {
-  const [news, setNews] = useState(staticNews);
+  const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchNews() {
       if (!isSupabaseConfigured || !supabase) {
-        setNews(staticNews);
+        setNews([]);
         setLoading(false);
         return;
       }
@@ -164,9 +140,9 @@ export function useNews() {
           .select('*')
           .order('published_date', { ascending: false });
 
-        if (dbError || !data || data.length === 0) {
-          setNews(staticNews);
-        } else {
+        if (dbError) throw dbError;
+
+        if (data && Array.isArray(data)) {
           setNews(data.map((n) => ({
             id: n.id,
             title: n.title,
@@ -177,11 +153,13 @@ export function useNews() {
             image: n.image_url,
             body: n.body,
           })));
+        } else {
+          setNews([]);
         }
       } catch (err) {
-        console.warn('Supabase fetch failed, falling back to static news:', err);
+        console.error('Error fetching news from Supabase:', err);
         setError(err);
-        setNews(staticNews);
+        setNews([]);
       } finally {
         setLoading(false);
       }
@@ -190,21 +168,21 @@ export function useNews() {
     fetchNews();
   }, []);
 
-  return { newsArticles: news || staticNews, loading, error };
+  return { newsArticles: news, loading, error };
 }
 
 /**
- * Hook to fetch gallery (Supabase with static fallback)
+ * Pure dynamic client-side hook for Gallery (Supabase)
  */
 export function useGallery() {
-  const [gallery, setGallery] = useState(staticGallery);
+  const [gallery, setGallery] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchGallery() {
       if (!isSupabaseConfigured || !supabase) {
-        setGallery(staticGallery);
+        setGallery([]);
         setLoading(false);
         return;
       }
@@ -216,20 +194,22 @@ export function useGallery() {
           .select('*')
           .order('created_at', { ascending: true });
 
-        if (dbError || !data || data.length === 0) {
-          setGallery(staticGallery);
-        } else {
+        if (dbError) throw dbError;
+
+        if (data && Array.isArray(data)) {
           setGallery(data.map((g) => ({
             id: g.id,
             src: g.image_url,
             alt: g.caption,
             category: g.category,
           })));
+        } else {
+          setGallery([]);
         }
       } catch (err) {
-        console.warn('Supabase fetch failed, falling back to static gallery:', err);
+        console.error('Error fetching gallery from Supabase:', err);
         setError(err);
-        setGallery(staticGallery);
+        setGallery([]);
       } finally {
         setLoading(false);
       }
@@ -238,21 +218,21 @@ export function useGallery() {
     fetchGallery();
   }, []);
 
-  return { galleryItems: gallery || staticGallery, loading, error };
+  return { galleryItems: gallery, loading, error };
 }
 
 /**
- * Hook to fetch dealers (Supabase with static fallback)
+ * Pure dynamic client-side hook for Dealers (Supabase)
  */
 export function useDealers() {
-  const [dealers, setDealers] = useState(staticDealers);
+  const [dealers, setDealers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchDealers() {
       if (!isSupabaseConfigured || !supabase) {
-        setDealers(staticDealers);
+        setDealers([]);
         setLoading(false);
         return;
       }
@@ -264,9 +244,9 @@ export function useDealers() {
           .select('*')
           .order('state', { ascending: true });
 
-        if (dbError || !data || data.length === 0) {
-          setDealers(staticDealers);
-        } else {
+        if (dbError) throw dbError;
+
+        if (data && Array.isArray(data)) {
           setDealers(data.map((d) => ({
             id: d.id,
             name: d.name,
@@ -278,11 +258,13 @@ export function useDealers() {
             state: d.state,
             products: ['Hybrid Seeds', 'Crop Advisory'],
           })));
+        } else {
+          setDealers([]);
         }
       } catch (err) {
-        console.warn('Supabase fetch failed, falling back to static dealers:', err);
+        console.error('Error fetching dealers from Supabase:', err);
         setError(err);
-        setDealers(staticDealers);
+        setDealers([]);
       } finally {
         setLoading(false);
       }
@@ -291,21 +273,21 @@ export function useDealers() {
     fetchDealers();
   }, []);
 
-  return { dealers: dealers || staticDealers, loading, error };
+  return { dealers, loading, error };
 }
 
 /**
- * Hook to fetch seasonal crop calendar (Supabase with static fallback)
+ * Pure dynamic client-side hook for Seasonal Crop Calendar (Supabase)
  */
 export function useCropCalendar() {
-  const [cropCalendar, setCropCalendar] = useState(staticCropCalendar);
+  const [cropCalendar, setCropCalendar] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchCropCalendar() {
       if (!isSupabaseConfigured || !supabase) {
-        setCropCalendar(staticCropCalendar);
+        setCropCalendar([]);
         setLoading(false);
         return;
       }
@@ -317,15 +299,17 @@ export function useCropCalendar() {
           .select('*')
           .order('display_order', { ascending: true });
 
-        if (dbError || !data || data.length === 0) {
-          setCropCalendar(staticCropCalendar);
-        } else {
+        if (dbError) throw dbError;
+
+        if (data && Array.isArray(data)) {
           setCropCalendar(data);
+        } else {
+          setCropCalendar([]);
         }
       } catch (err) {
-        console.warn('Supabase fetch failed, falling back to static crop calendar:', err);
+        console.error('Error fetching crop calendar from Supabase:', err);
         setError(err);
-        setCropCalendar(staticCropCalendar);
+        setCropCalendar([]);
       } finally {
         setLoading(false);
       }
@@ -334,5 +318,5 @@ export function useCropCalendar() {
     fetchCropCalendar();
   }, []);
 
-  return { cropCalendar: cropCalendar || staticCropCalendar, loading, error };
+  return { cropCalendar, loading, error };
 }
