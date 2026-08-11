@@ -2,11 +2,12 @@ import { useState, useRef, useEffect } from 'react';
 import SEOHead from '../components/shared/SEOHead';
 import { Link } from 'react-router-dom';
 import { motion, useInView, useAnimation } from 'framer-motion';
-import { ArrowRight, CheckCircle, Star, Phone, Mail, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, CheckCircle, Star, Phone, Mail, MapPin, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import { CATEGORIES } from '../data/products';
 import { useProducts, useTestimonials, useNews } from '../hooks/useData';
 import ProductModal from '../components/products/ProductModal';
 import ProductCard from '../components/products/ProductCard';
+import CropMarquee from '../components/home/CropMarquee';
 
 // Animated counter
 function Counter({ end, suffix = '', prefix = '' }) {
@@ -81,7 +82,7 @@ export default function Home() {
         keywords="ubuntu seeds, hybrid seeds india, cotton seeds gujarat, vegetable hybrid seeds, seed company ahmedabad, bajra hybrid india"
       />
       {/* ===== HERO ===== */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
+      <section className="relative min-h-screen flex flex-col justify-between overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0">
           <img
@@ -96,7 +97,8 @@ export default function Home() {
         <div className="absolute top-20 right-10 w-64 h-64 rounded-full opacity-10" style={{ background: '#D4873B', filter: 'blur(80px)' }} />
         <div className="absolute bottom-20 left-10 w-48 h-48 rounded-full opacity-10" style={{ background: '#fff', filter: 'blur(60px)' }} />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-28 sm:pt-36 pb-16 sm:pb-24">
+        {/* Main Hero Content */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-24 sm:pt-32 pb-8 w-full flex-1 flex flex-col justify-center">
           <div className="max-w-3xl">
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
               <span className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium text-amber-200 mb-4 sm:mb-6 border border-amber-400/30" style={{ backgroundColor: 'rgba(212,135,59,0.2)' }}>
@@ -132,7 +134,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-4"
+              className="mt-10 sm:mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4"
             >
               {[
                 { label: 'Seed Varieties', end: 20, suffix: '+' },
@@ -149,16 +151,33 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-          <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 1.5 }} className="w-6 h-10 rounded-full border-2 border-white/40 flex justify-center pt-2">
-            <div className="w-1 h-3 rounded-full bg-white/60" />
-          </motion.div>
+        {/* ===== FULL-WIDTH INFINITE CROP MARQUEE AT BOTTOM OF HERO ===== */}
+        <div className="relative w-full z-10 pb-4 pt-1 flex flex-col items-center">
+          <CropMarquee />
+
+          {/* Animated Scroll Down Indicator Toggle */}
+          <button
+            onClick={() => {
+              const target = document.getElementById('why-choose-us');
+              if (target) target.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="flex flex-col items-center gap-1 group cursor-pointer mt-3 transition-transform hover:scale-110"
+            aria-label="Scroll to next section"
+          >
+            <motion.div
+              animate={{ y: [0, 5, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+              className="w-6 h-9 rounded-full border-2 border-white/50 group-hover:border-amber-400 flex justify-center pt-1.5 backdrop-blur-xs bg-black/10 transition-colors shadow-md"
+            >
+              <div className="w-1 h-2 rounded-full bg-amber-400 group-hover:bg-amber-300" />
+            </motion.div>
+            <ChevronDown size={14} className="text-white/80 group-hover:text-amber-400 animate-bounce -mt-0.5" />
+          </button>
         </div>
       </section>
 
       {/* ===== WHY CHOOSE US ===== */}
-      <section className="py-20" style={{ backgroundColor: '#FDF8F0' }}>
+      <section id="why-choose-us" className="py-20" style={{ backgroundColor: '#FDF8F0' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <FadeIn>
             <div className="text-center mb-14">
