@@ -27,30 +27,100 @@ const greenIcon = new L.DivIcon({
   popupAnchor: [0, -30],
 });
 
-// Approximate coords for each dealer city
+// Comprehensive city & district coordinate lookup map
+const CITY_COORDS = {
+  // Gujarat
+  ahmedabad: [23.0225, 72.5714],
+  rajkot: [22.3039, 70.8022],
+  jamnagar: [22.4707, 70.0577],
+  mehsana: [23.6000, 72.4000],
+  anand: [22.5645, 72.9289],
+  surendranagar: [22.7239, 71.6364],
+  surat: [21.1702, 72.8311],
+  vadodara: [22.3072, 73.1812],
+  bhavnagar: [21.7645, 72.1519],
+  junagadh: [21.5222, 70.4579],
+  banaskantha: [24.1724, 72.4346],
+  saurashtra: [21.7645, 72.1519],
+
+  // Maharashtra
+  jalgaon: [21.0077, 75.5626],
+  akola: [20.7002, 77.0082],
+  nagpur: [21.1458, 79.0882],
+  nashik: [20.0059, 73.7898],
+  pune: [18.5204, 73.8567],
+
+  // Rajasthan
+  jodhpur: [26.2389, 73.0243],
+  jaipur: [26.9124, 75.7873],
+  udaipur: [24.5854, 73.7125],
+
+  // Madhya Pradesh
+  indore: [22.7196, 75.8577],
+  bhopal: [23.2599, 77.4126],
+};
+
 const DEALER_COORDS = {
+  1:  [23.0225, 72.5714], // Ahmedabad
+  2:  [22.3039, 70.8022], // Rajkot
+  3:  [22.4707, 70.0577], // Jamnagar
+  4:  [23.6000, 72.4000], // Mehsana
+  5:  [22.5645, 72.9289], // Anand
+  6:  [22.7239, 71.6364], // Surendranagar
+  7:  [21.0077, 75.5626], // Jalgaon
   8:  [20.7002, 77.0082], // Akola
   9:  [26.2389, 73.0243], // Jodhpur
   10: [22.7196, 75.8577], // Indore
 };
+
+function getDealerCoords(dealer, index = 0) {
+  if (!dealer) return [22.2587, 71.1924];
+  if (DEALER_COORDS[dealer.id]) return DEALER_COORDS[dealer.id];
+
+  const cityKey = (dealer.city || dealer.district || '').toLowerCase().trim();
+  if (CITY_COORDS[cityKey]) return CITY_COORDS[cityKey];
+
+  const districtKey = (dealer.district || '').toLowerCase().trim();
+  if (CITY_COORDS[districtKey]) return CITY_COORDS[districtKey];
+
+  // Offset markers in same state so they don't overlap exactly
+  const offsetLat = (index % 5) * 0.04;
+  const offsetLng = (index % 3) * 0.04;
+
+  if ((dealer.state || '').toLowerCase().includes('gujarat')) {
+    return [22.2587 + offsetLat, 71.1924 + offsetLng];
+  }
+  if ((dealer.state || '').toLowerCase().includes('maharashtra')) {
+    return [19.7515 + offsetLat, 75.7139 + offsetLng];
+  }
+  if ((dealer.state || '').toLowerCase().includes('rajasthan')) {
+    return [26.9124 + offsetLat, 75.7873 + offsetLng];
+  }
+  if ((dealer.state || '').toLowerCase().includes('madhya')) {
+    return [22.7196 + offsetLat, 75.8577 + offsetLng];
+  }
+
+  return [22.2587 + offsetLat, 71.1924 + offsetLng];
+}
 
 const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID  || 'YOUR_SERVICE_ID';
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_DEALER_TEMPLATE_ID || import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID';
 const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY  || 'YOUR_PUBLIC_KEY';
 
 export default function DealerLocator() {
+  const { dealers } = useDealers();
   const [selectedState, setSelectedState] = useState('');
   const [search, setSearch] = useState('');
   const [form, setForm] = useState({ name: '', phone: '', email: '', city: '', message: '' });
   const [sending, setSending] = useState(false);
   const [activeDealer, setActiveDealer] = useState(null);
 
-  const filtered = dealers.filter((d) => {
+  const filtered = (dealers || []).filter((d) => {
     const matchState = !selectedState || d.state === selectedState;
     const matchSearch = !search
-      || d.name.toLowerCase().includes(search.toLowerCase())
-      || d.city.toLowerCase().includes(search.toLowerCase())
-      || d.district.toLowerCase().includes(search.toLowerCase());
+      || (d.name && d.name.toLowerCase().includes(search.toLowerCase()))
+      || (d.city && d.city.toLowerCase().includes(search.toLowerCase()))
+      || (d.district && d.district.toLowerCase().includes(search.toLowerCase()));
     return matchState && matchSearch;
   });
 
@@ -119,12 +189,11 @@ export default function DealerLocator() {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              {dealers.map((dealer) => {
-                const coords = DEALER_COORDS[dealer.id];
-                if (!coords) return null;
+              {filtered.map((dealer, idx) => {
+                const coords = getDealerCoords(dealer, idx);
                 return (
                   <Marker
-                    key={dealer.id}
+                    key={dealer.id || idx}
                     position={coords}
                     icon={greenIcon}
                     eventHandlers={{ click: () => setActiveDealer(dealer) }}
@@ -132,8 +201,8 @@ export default function DealerLocator() {
                     <Popup>
                       <div className="text-sm">
                         <strong>{dealer.name}</strong><br />
-                        {dealer.city}, {dealer.state}<br />
-                        <a href={`tel:${dealer.phone.replace(/\s/g, '')}`} style={{ color: '#225D36' }}>{dealer.phone}</a>
+                        {dealer.city || dealer.district}, {dealer.state}<br />
+                        <a href={`tel:${(dealer.phone || '').replace(/\s/g, '')}`} style={{ color: '#225D36' }}>{dealer.phone}</a>
                       </div>
                     </Popup>
                   </Marker>
@@ -211,11 +280,13 @@ export default function DealerLocator() {
                     <a href={`tel:${dealer.phone.replace(/\s/g, '')}`} className="font-medium" style={{ color: '#D4873B' }}>{dealer.phone}</a>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-1">
-                  {dealer.products.map((p) => (
-                    <span key={p} className="text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-100">{p}</span>
-                  ))}
-                </div>
+                {dealer.products && Array.isArray(dealer.products) && (
+                  <div className="flex flex-wrap gap-1">
+                    {dealer.products.map((p) => (
+                      <span key={p} className="text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-100">{p}</span>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>

@@ -80,6 +80,8 @@ export default function App() {
             <Route index element={<Suspense fallback={<PageLoader />}><Home /></Suspense>} />
             <Route path="about" element={<Suspense fallback={<PageLoader />}><About /></Suspense>} />
             <Route path="products" element={<Suspense fallback={<PageLoader />}><Products /></Suspense>} />
+            <Route path="products/:categorySlug" element={<Suspense fallback={<PageLoader />}><Products /></Suspense>} />
+            <Route path="products/:categorySlug/:cropTypeSlug" element={<Suspense fallback={<PageLoader />}><Products /></Suspense>} />
             <Route path="crop-advisory" element={<Suspense fallback={<PageLoader />}><CropAdvisory /></Suspense>} />
             <Route path="find-dealer" element={<Suspense fallback={<PageLoader />}><DealerLocator /></Suspense>} />
             <Route path="gallery" element={<Suspense fallback={<PageLoader />}><Gallery /></Suspense>} />

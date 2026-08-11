@@ -265,38 +265,48 @@ export default function Home() {
           </FadeIn>
 
           <div className="relative max-w-3xl mx-auto">
-            <motion.div
-              key={testimonialIdx}
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.4 }}
-              className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20 text-center"
-            >
-              {/* Stars */}
-              <div className="flex justify-center gap-1 mb-4">
-                {Array.from({ length: testimonials[testimonialIdx].rating }).map((_, i) => (
-                  <Star key={i} size={18} className="fill-amber-400 text-amber-400" />
-                ))}
-              </div>
+            {(() => {
+              const currentTestimonial = (testimonials && testimonials.length > 0)
+                ? (testimonials[testimonialIdx] || testimonials[0])
+                : null;
 
-              <p className="text-white text-lg leading-relaxed italic mb-6">
-                "{testimonials[testimonialIdx].text}"
-              </p>
+              if (!currentTestimonial) return null;
 
-              <div className="flex items-center justify-center gap-3">
-                <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white text-lg"
-                  style={{ backgroundColor: testimonials[testimonialIdx].bgColor }}
+              return (
+                <motion.div
+                  key={testimonialIdx}
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -30 }}
+                  transition={{ duration: 0.4 }}
+                  className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20 text-center"
                 >
-                  {testimonials[testimonialIdx].avatar}
-                </div>
-                <div className="text-left">
-                  <p className="font-semibold text-white">{testimonials[testimonialIdx].name}</p>
-                  <p className="text-green-300 text-sm">{testimonials[testimonialIdx].location} • {testimonials[testimonialIdx].crop}</p>
-                </div>
-              </div>
-            </motion.div>
+                  {/* Stars */}
+                  <div className="flex justify-center gap-1 mb-4">
+                    {Array.from({ length: currentTestimonial.rating || 5 }).map((_, i) => (
+                      <Star key={i} size={18} className="fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+
+                  <p className="text-white text-lg leading-relaxed italic mb-6">
+                    "{currentTestimonial.text}"
+                  </p>
+
+                  <div className="flex items-center justify-center gap-3">
+                    <div
+                      className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white text-lg"
+                      style={{ backgroundColor: currentTestimonial.bgColor || '#225D36' }}
+                    >
+                      {currentTestimonial.avatar}
+                    </div>
+                    <div className="text-left">
+                      <p className="font-semibold text-white">{currentTestimonial.name}</p>
+                      <p className="text-green-300 text-sm">{currentTestimonial.location} • {currentTestimonial.crop}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })()}
 
             {/* Navigation */}
             <div className="flex justify-center gap-4 mt-8">

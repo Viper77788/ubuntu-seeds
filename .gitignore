@@ -22,4 +22,5 @@ Thumbs.db
 
 # Temp / Scratch scripts
 make_transparent.py
+*.cjs
 
